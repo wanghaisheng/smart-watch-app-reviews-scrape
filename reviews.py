@@ -60,7 +60,8 @@ def play_store_scraper(package):
     
 
     df = pd.DataFrame(googlerows)
-    df.to_csv("./"+package+'-'+lang+'-'+country+'-'+"google-app-review.csv", index=False)
+    df.to_csv("./"+package+'-'+lang+'-'+country+'-'+"google-app-review.csv", index=False,encoding = 'utf-8'
+)
 
 applerows = []
 
@@ -81,7 +82,8 @@ def app_store_scraper(app_name,country=country,lang='us'):
         
         applerows.append(data)
     df = pd.DataFrame(applerows)
-    df.to_csv("./"+app_name+'-'+country+'-'+"apple-app-review.csv", index=False)
+    df.to_csv("./"+app_name+'-'+country+'-'+"apple-app-review.csv", index=False,encoding = 'utf-8'
+)
 def app_reviews(country_code,app_id):
 
     return "https://itunes.apple.com/%s/rss/customerreviews/id=%s/sortBy=mostRecent/json" % (country_code, app_id)    
