@@ -26,7 +26,7 @@ def play_store_scraper(package,country='us'):
 
 applerows = []
 
-def app_store_scraper(app_name,country=country,lang='us'):
+def app_store_scraper(app_name,country='us',lang='us'):
     if country=='cn':
         #https://github.com/cowboy-bebug/app-store-scraper/issues/34
         print('url encode app name',quote(app_name))
@@ -48,7 +48,12 @@ def app_store_scraper(app_name,country=country,lang='us'):
 
 
 def app_reviews():
-    country=None
+    lang='en'
+    try:
+        lang=os.getenv('lang')
+    except:
+        lang='en'    
+    country='us'
     try:
         country=os.getenv('country')
     except:
@@ -61,15 +66,12 @@ def app_reviews():
 if not os.getenv('google_app_package_url')=='':
     play_store_scraper(google_app_package_name,country)
 if not os.getenv('apple_app_package_name')=='':
-    app_store_scraper(apple_app_package_name,country)
+    app_store_scraper(apple_app_package_name,country,lang)
 
 #huawei  xiaomi samsung
 
 
-try:
-    lang=os.getenv('lang')
-except:
-    lang='en'
+
 OUTPUT_DIR = Path("data")
 try:
     google_app_package_url = os.getenv('google_app_package_url').strip()
