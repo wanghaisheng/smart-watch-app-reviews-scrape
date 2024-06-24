@@ -74,6 +74,9 @@ def app_reviews():
         try:
             google_app_package_url = os.getenv('google_app_package_url').strip()
             if 'https://play.google.com/store/apps/details?id=' in google_app_package_url:
+
+                if ”&“ in google_app_package_url:
+                    google_app_package_url=google_app_package_url.split('&')[0]
                 google_app_package_name=google_app_package_url.split('&')[0].replace('https://play.google.com/store/apps/details?id=','')
 
                 result=play_store_scraper(google_app_package_name,country)
