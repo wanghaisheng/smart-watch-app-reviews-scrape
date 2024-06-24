@@ -46,6 +46,7 @@ def app_store_scraper(app_name,country='us',lang='us'):
     df.to_csv("./"+app_name+'-'+country+'-'+"apple-app-review.csv", index=False,encoding = 'utf-8'
 )
 
+    # return "https://itunes.apple.com/%s/rss/customerreviews/id=%s/sortBy=mostRecent/json" % (country_code, app_id)    
 
 def app_reviews():
     google_app_package_name='com.lemon.lvoverseas'
@@ -89,12 +90,11 @@ def app_reviews():
         print('country',country)
         if country is None or country =="":
             country='us'
-    return "https://itunes.apple.com/%s/rss/customerreviews/id=%s/sortBy=mostRecent/json" % (country_code, app_id)    
-# https://itunes.apple.com/us/rss/customerreviews/id=1500855883/sortBy=mostRecent/json    
-if not os.getenv('google_app_package_url')=='':
-    play_store_scraper(google_app_package_name,country)
-if not os.getenv('apple_app_package_name')=='':
-    app_store_scraper(apple_app_package_name,country,lang)
+    # https://itunes.apple.com/us/rss/customerreviews/id=1500855883/sortBy=mostRecent/json    
+    if not os.getenv('google_app_package_url')=='':
+        play_store_scraper(google_app_package_name,country)
+    if not os.getenv('apple_app_package_name')=='':
+        app_store_scraper(apple_app_package_name,country,lang)
 
 #huawei  xiaomi samsung
 
