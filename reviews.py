@@ -65,7 +65,6 @@ def app_reviews():
         print('country',country)
         if country is None or country =="":
             country='us'
-    print(f'input is:{google_app_package_name}--{apple_app_package_name}')
     # https://itunes.apple.com/us/rss/customerreviews/id=1500855883/sortBy=mostRecent/json    
     if not os.getenv('google_app_package_url')=='':
 
