@@ -11,19 +11,21 @@ from urllib.parse import urlencode, quote_plus,quote
 
 googlerows = []
 def play_store_scraper(package,country='us',lang='en'):
-    results = reviews_all(package,sleep_milliseconds=0,lang='en',country=country,sort=Sort.MOST_RELEVANT)
-
-
-    # Adds the fields to the CSV
-    for x, item in enumerate(results):
-        googlerows.append(item)
-
+    try:
+        results = reviews_all(package,sleep_milliseconds=0,lang='en',country=country,sort=Sort.MOST_RELEVANT)
     
-
-    df = pd.DataFrame(googlerows)
-    df.to_csv("./"+package+'-'+lang+'-'+country+'-'+"google-app-review.csv", index=False,encoding = 'utf-8'
-)
-
+    
+        # Adds the fields to the CSV
+        for x, item in enumerate(results):
+            googlerows.append(item)
+    
+        
+    
+        df = pd.DataFrame(googlerows)
+        df.to_csv("./"+package+'-'+lang+'-'+country+'-'+"google-app-review.csv", index=False,encoding = 'utf-8'
+    )
+    except:
+        return None
 applerows = []
 
 def app_store_scraper(app_name,country='us',lang='en'):
@@ -72,8 +74,11 @@ def app_reviews():
         try:
             google_app_package_url = os.getenv('google_app_package_url').strip()
             if 'https://play.google.com/store/apps/details?id=' in google_app_package_url:
-                
                 google_app_package_name=google_app_package_url.split('&')[0].replace('https://play.google.com/store/apps/details?id=','')
+
+                result=play_store_scraper(google_app_package_name,country)
+                if result:
+                    return 
                 # https://play.google.com/store/apps/details?id=com.twitter.android
                 if not len(google_app_package_name.split('.'))==3:
                     print('not 2 dots,',google_app_package_url,google_app_package_name)
@@ -83,7 +88,7 @@ def app_reviews():
                             country="us",  # defaults to 'us'
                             n_hits=3  # defaults to 30 (= Google's maximum)
                         )
-                    print('searh result,result)
+                    print('searh result',result)
                     google_app_package_name=result[0].get('appId')
                 play_store_scraper(google_app_package_name,country)
         
