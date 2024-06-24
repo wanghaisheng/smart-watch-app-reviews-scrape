@@ -10,7 +10,7 @@ from urllib.parse import urlencode, quote_plus,quote
 
 
 googlerows = []
-def play_store_scraper(package,country='us'):
+def play_store_scraper(package,country='us',lang='en'):
     results = reviews_all(package,sleep_milliseconds=0,lang='en',country=country,sort=Sort.MOST_RELEVANT)
 
 
@@ -26,7 +26,7 @@ def play_store_scraper(package,country='us'):
 
 applerows = []
 
-def app_store_scraper(app_name,country='us',lang='us'):
+def app_store_scraper(app_name,country='us',lang='en'):
     if country=='cn':
         #https://github.com/cowboy-bebug/app-store-scraper/issues/34
         print('url encode app name',quote(app_name))
@@ -54,7 +54,7 @@ def app_reviews():
         google_app_package_url = os.getenv('google_app_package_url').strip()
         if 'https://play.google.com/store/apps/details?id=' in google_app_package_url:
             
-            google_app_package_name=google_app_package_url.replace('https://play.google.com/store/apps/details?id=','')
+            google_app_package_name=google_app_package_url.split('&')[0].replace('https://play.google.com/store/apps/details?id=','')
             # https://play.google.com/store/apps/details?id=com.twitter.android
             if not len(google_app_package_name.split('.'))==3:
                 print('not support package,',google_app_package_url,google_app_package_name)
@@ -90,6 +90,7 @@ def app_reviews():
         print('country',country)
         if country is None or country =="":
             country='us'
+    print(f'input is:{google_app_package_name}--{apple_app_package_name}')
     # https://itunes.apple.com/us/rss/customerreviews/id=1500855883/sortBy=mostRecent/json    
     if not os.getenv('google_app_package_url')=='':
         play_store_scraper(google_app_package_name,country)
@@ -104,5 +105,3 @@ OUTPUT_DIR = Path("data")
 
 
 app_reviews()
-
-
