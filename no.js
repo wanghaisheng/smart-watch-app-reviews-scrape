@@ -1,5 +1,6 @@
 https://github.com/facundoolano/app-store-scraper
 
+https://github.com/rossmartin/app-store-scraper-reviews
 
 var store = require('app-store-scraper'); // regular non caching version
 var memoized = require('app-store-scraper').memoized(); // cache with default options
