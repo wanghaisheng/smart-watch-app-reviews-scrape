@@ -49,34 +49,9 @@ def app_store_scraper(app_name,country='us',lang='en'):
     # return "https://itunes.apple.com/%s/rss/customerreviews/id=%s/sortBy=mostRecent/json" % (country_code, app_id)    
 
 def app_reviews():
-    google_app_package_name='com.lemon.lvoverseas'
-    try:
-        google_app_package_url = os.getenv('google_app_package_url').strip()
-        if 'https://play.google.com/store/apps/details?id=' in google_app_package_url:
-            
-            google_app_package_name=google_app_package_url.split('&')[0].replace('https://play.google.com/store/apps/details?id=','')
-            # https://play.google.com/store/apps/details?id=com.twitter.android
-            if not len(google_app_package_name.split('.'))==3:
-                print('not support package,',google_app_package_url,google_app_package_name)
-    except:
-        google_app_package_name='com.lemon.lvoverseas'
-    apple_app_package_name='capcut-video-editor'
+
     
-    try:
-    # https://apps.apple.com/us/app/indycar/id606905722
-    #     https://apps.apple.com/us/app/capcut-video-editor/id1500855883
-    #https://apps.apple.com/cn/app/妙健康-健康管理平台/id841386224?l=ru&see-all=reviews
-    #https://apps.apple.com/cn/app/%E5%A6%99%E5%81%A5%E5%BA%B7-%E5%81%A5%E5%BA%B7%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0/id841386224?l=ru&see-all=reviews
-        apple_app_package_url = os.getenv('apple_app_package_url').strip()
-        if 'https://apps.apple.com' in apple_app_package_url:
-            if '?' in apple_app_package_url:
-                apple_app_package_url=apple_app_package_url.split('?')[0]
-            
-            apple_app_package_name=apple_app_package_url.split('/')[-2]
-            if not len(apple_app_package_name)>0:
-                print('not support package,',apple_app_package_url,apple_app_package_name)        
-    except:
-        apple_app_package_name='capcut-video-editor'    
+ 
     lang='en'
     try:
         lang=os.getenv('lang')
@@ -93,9 +68,49 @@ def app_reviews():
     print(f'input is:{google_app_package_name}--{apple_app_package_name}')
     # https://itunes.apple.com/us/rss/customerreviews/id=1500855883/sortBy=mostRecent/json    
     if not os.getenv('google_app_package_url')=='':
-        play_store_scraper(google_app_package_name,country)
+
+        google_app_package_name='com.lemon.lvoverseas'
+        try:
+            google_app_package_url = os.getenv('google_app_package_url').strip()
+            if 'https://play.google.com/store/apps/details?id=' in google_app_package_url:
+                
+                google_app_package_name=google_app_package_url.split('&')[0].replace('https://play.google.com/store/apps/details?id=','')
+                # https://play.google.com/store/apps/details?id=com.twitter.android
+                if not len(google_app_package_name.split('.'))==3:
+                    print('not support package,',google_app_package_url,google_app_package_name)
+                    result = search(
+                            google_app_package_name,
+                            lang="en",  # defaults to 'en'
+                            country="us",  # defaults to 'us'
+                            n_hits=3  # defaults to 30 (= Google's maximum)
+                        )
+                    google_app_package_name=result[0].get('appId')
+                play_store_scraper(google_app_package_name,country)
+        
+        except:
+            print('not support package,',google_app_package_url,google_app_package_name)
+
+
+        
     if not os.getenv('apple_app_package_name')=='':
-        app_store_scraper(apple_app_package_name,country,lang)
+        try:
+        # https://apps.apple.com/us/app/indycar/id606905722
+        #     https://apps.apple.com/us/app/capcut-video-editor/id1500855883
+        #https://apps.apple.com/cn/app/妙健康-健康管理平台/id841386224?l=ru&see-all=reviews
+        #https://apps.apple.com/cn/app/%E5%A6%99%E5%81%A5%E5%BA%B7-%E5%81%A5%E5%BA%B7%E7%AE%A1%E7%90%86%E5%B9%B3%E5%8F%B0/id841386224?l=ru&see-all=reviews
+            apple_app_package_url = os.getenv('apple_app_package_url').strip()
+            if 'https://apps.apple.com' in apple_app_package_url:
+                if '?' in apple_app_package_url:
+                    apple_app_package_url=apple_app_package_url.split('?')[0]
+                
+                apple_app_package_name=apple_app_package_url.split('/')[-2]
+                if not len(apple_app_package_name)>0:
+                    print('not support package,',apple_app_package_url,apple_app_package_name)        
+                app_store_scraper(apple_app_package_name,country,lang)
+                    
+        except:
+            print('not support package,',apple_app_package_url,apple_app_package_name)        
+        
 
 #huawei  xiaomi samsung
 
