@@ -76,13 +76,14 @@ def app_reviews():
                 google_app_package_name=google_app_package_url.split('&')[0].replace('https://play.google.com/store/apps/details?id=','')
                 # https://play.google.com/store/apps/details?id=com.twitter.android
                 if not len(google_app_package_name.split('.'))==3:
-                    print('not support package,',google_app_package_url,google_app_package_name)
+                    print('not 2 dots,',google_app_package_url,google_app_package_name)
                     result = search(
                             google_app_package_name,
                             lang="en",  # defaults to 'en'
                             country="us",  # defaults to 'us'
                             n_hits=3  # defaults to 30 (= Google's maximum)
                         )
+                    print('searh result,result)
                     google_app_package_name=result[0].get('appId')
                 play_store_scraper(google_app_package_name,country)
         
