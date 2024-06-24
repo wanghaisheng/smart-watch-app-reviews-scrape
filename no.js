@@ -1,5 +1,5 @@
 https://github.com/facundoolano/app-store-scraper
-
+https://github.com/haqq-network/app-store-scraper/issues/new
 https://github.com/rossmartin/app-store-scraper-reviews
 
 How is this different than getting reviews using app-store-scraper?
