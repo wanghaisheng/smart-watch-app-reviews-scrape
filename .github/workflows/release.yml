@@ -1,0 +1,80 @@
+name: appstorereviews release
+
+on:
+  workflow_dispatch:
+    inputs:
+      google_app_package_url:
+        description: 'Google Playstore URL like https://play.google.com/store/apps/details?id=com.twitter.android'
+        type: string
+        required: False
+      apple_app_package_url:
+        description: 'Apple Playstore URL like https://apps.apple.com/us/app/capcut-video-editor/id1500855883'
+        type: string
+        required: False    
+      country:
+        description: 'Country like "us","cn"'
+        type: string
+        required: False
+      action:
+        description: 'Choose action: "commit" to commit to repo, "upload" to upload to release'
+        type: string
+        required: False
+        default: 'upload'  # Default action is commit
+
+jobs:
+  scrape_and_email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install all necessary packages
+        run: pip install google-play-scraper app_store_scraper pandas 
+
+      - name: Run the scraping script
+        run: python reviews.py
+        env:
+          apple_app_package_url: ${{ github.event.inputs.apple_app_package_url }}          
+          google_app_package_url: ${{ github.event.inputs.google_app_package_url }}          
+          country: ${{ github.event.inputs.country }}          
+
+      - name: Commit files to repository if selected
+        if: ${{ github.event.inputs.action == 'commit' }}
+        run: |
+          git config user.name "Automated"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Add new app reviews"
+          git pull
+          git push
+
+      - name: Create GitHub Release and upload files if selected
+        if: ${{ github.event.inputs.action == 'upload' }}
+        run: |
+          VERSION_TAG="v1.0.0"
+          # Install jq for parsing JSON
+          sudo apt-get install jq
+
+          # Check if the release exists, create if not
+          RELEASE_ID=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/releases/tags/$VERSION_TAG \
+            | jq -r .id)
+          if [ "$RELEASE_ID" == "null" ]; then
+            # Create release if it doesn't exist
+            RELEASE_RESPONSE=$(curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d '{"tag_name": "'$VERSION_TAG'", "name": "'$VERSION_TAG'", "body": "Automated release of app reviews"}' \
+              https://api.github.com/repos/${{ github.repository }}/releases)
+            RELEASE_ID=$(echo $RELEASE_RESPONSE | jq -r .id)
+          fi
+
+          # Upload CSV files to the release
+          for file in $(ls ./*-google-app-review.csv ./*-apple-app-review.csv); do
+            curl -s -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -F "file=@$file" \
+              https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $file)
+          done
